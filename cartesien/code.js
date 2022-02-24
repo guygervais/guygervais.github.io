@@ -62,6 +62,7 @@ function square(c) {
 
 
 function clear(c) {
+  c.fillStyle = 'white';
   c.clearRect(0, 0, size, size);
 }
 
@@ -95,7 +96,7 @@ function init() {
 
 //done: optimize by drawing once to a 2nd canvas and copy buffer.
 function grid(c) {
-
+  
   console.log("drawing grid", size, unite, interval); 
   c.fillStyle = 'rgba(0, 0, 200, 0.3)';
 
