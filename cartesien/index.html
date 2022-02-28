@@ -10,6 +10,20 @@
   <body>
     <!-- 720, 840, 960 work well-->
     <canvas id="canvas" width="720" height="720"></canvas>
+    <img id="ile" src="island.png" class="hide">
+    <img id="lghelp" src="little-guy-help.png" class="hide">
+    <img id="lgsad" src="little-guy-sad.png" class="hide">
+    <img id="lghappy" src="little-guy-happy.png" class="hide">
+
+    <form>
+      <h2>Entrez les coordonnées</h2>
+      <label for="fname">( </label>
+      <input type="text" id="X" size="3" value="-2"> 
+      <label for="fname">, </label>      
+      <input type="text" id="Y" size="3" value="-3">
+      <label for="lname">)</label>
+      <input id="bouton" type="button" value="OK" onclick="return btnOK();">
+    </form>
   </body>
 
 </html>
