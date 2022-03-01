@@ -16,33 +16,96 @@ let xx, yy, dx, dy;
 
 let target_x, target_y; //target x,y cartesienne
 let tx, ty; // target coordonnées écran.
-let cx, cy;
-let uy; // screen coord for user Y
-let drop_en_cours = false;
+let cx, cy; // cadeau
+let ux, uy; // screen coord for user Y
 
-let guy_happy = false;
-let guy_sad = false;
+let user_x, user_y;
+
+const button = document.getElementById('bouton');
+const encore = document.getElementById('encore');
+const lghelp = document.getElementById("lghelp");
+const aidez_moi = document.getElementById("aidez_moi");
+
+let game_state = "start";
+
+let aidez = 60;
 
 window.onload = main();
 
 function main() {
   init();
-
-  target_x = -2;
-  target_y = -3;
-  
-  tx = (target_x * interval) + (size / 2);
-  ty = (target_y * -interval) + (size / 2);
-  
-  console.log("target",tx,ty);
-
   window.requestAnimationFrame(gameLoop);
 }
 
 function gameLoop() {
   draw();  
+
+  switch(game_state) {
+
+    case "start":
+      // code block
+      encore.classList.add("hide");
+      placeGuy();
+      game_state = "help";
+      document.getElementById("X").focus();
+      break;
+
+    case "help":
+      if (button.disabled) { button.disabled = false; }
+      break;
+
+    case "drop":
+      if (!button.disabled) { button.disabled = true; }
+      break;
+
+    case "happy":
+      if (!button.disabled) { button.disabled = true; }
+      encore.classList.remove("hide");
+      break;
+
+    case "sad":
+      if (button.disabled) { button.disabled = false; }
+      break;
+
+    default:
+      // code block
+  }
+
   window.requestAnimationFrame(gameLoop);  // Keep requesting new frames
-  //  console.log('fini');
+}
+
+function placeGuy() {
+
+  var limit = unite / 2 - 1;
+
+  var pixel;
+  var count = 0;
+
+  do {
+
+    count++;
+
+    target_x = Rnd(-limit, limit)
+    target_y = Rnd(-limit, limit)
+
+    tx = (target_x * interval) + (size / 2);
+    ty = (target_y * -interval) + (size / 2);
+
+    //console.log("target-c",target_x,target_y);
+    //console.log("target-s",tx,ty);
+
+    pixel = ctx.getImageData(tx + 2, ty + 2, 1, 1).data;
+    //console.log(pixel);
+
+  }
+  while ( (pixel[0] != 255) && (count < 1000) ); // water
+
+  console.log("pixel, count",pixel, count)
+
+  //while (false);
+  console.log("target-c",target_x,target_y);
+  console.log("target-s",tx,ty);
+
 }
 
 function draw() {
@@ -53,70 +116,85 @@ function draw() {
 
   planCartesien();
 
-  if (!(guy_happy || guy_sad)) {
-    afficheLGHelp(ctx, target_x, target_y);  
+  //info(ctx);
+
+  switch(game_state) {
+    case "help":
+    case "drop":
+      afficheLGHelp(ctx, target_x, target_y);  
+      break;
+    case "happy":
+      afficheLGHappy(ctx, target_x, target_y);
+      break;
+    case "sad":
+      afficheLGSad(ctx, target_x, target_y);
+      break;
   }
 
-  if (drop_en_cours) {
+
+  if (game_state == "drop") {
     afficheCadeau(ctx);
 
     cy = cy + 3;
-    if (cy >= uy - 16 || cy > size) {
-      drop_en_cours = false;
+    if ((cy >= uy - 16) || cy > size) {
+      //drop_en_cours = false;
+      game_state = "ok";
+
       const button = document.getElementById('bouton');
       button.disabled = false;    
-      
-      if (ty === uy) {
-        console.log(cx, cy, ty, uy);
-        guy_happy = true;
-        guy_sad = false;
+
+      console.log("cad.x,y =", cx, cy, "t.x,y=", tx, ty, "user.x,y=",ux, uy);
+
+      if (tx === ux && ty === uy) {
+        game_state = "happy";
       } else {
-        //console.log(cx, cy, uy);
-        guy_happy = false;
-        guy_sad = true;
+        game_state = "sad";
       }
     }
 
   }
-  
-  if (guy_happy) {
-    afficheLGHappy(ctx, target_x, target_y);
-  }
 
-  if (guy_sad) {
-    afficheLGSad(ctx, target_x, target_y);
-  }
-
-  //  afficheLGH(ctx, -4, 2);
-  //  afficheLGH(ctx, 3, 4);
-  //  afficheLGH(ctx, 1, -3);
-  //  afficheLGH(ctx, 4, -4);
-  //
-  //info(ctx);
-  //square(ctx);
 }
 
 function afficheCadeau(c) {
-  c.fillStyle = 'rgba(128, 00, 0, 1.0)';
-  c.fillRect(cx-8, cy, 16, 16);
+  //c.fillStyle = 'rgba(128, 00, 0, 1.0)';
+  //c.fillRect(cx-8, cy, 16, 16);
+  var jitter = Rnd(-1,1)
+
+  var img = document.getElementById("care");
+  c.drawImage(img, cx-13+jitter, cy-15);  
 }
 
 function afficheLGHelp(c, x, y) {
-  //  console.log('afficheLGH');
-  var img = document.getElementById("lghelp");
-  c.drawImage(img, (size / 2) + (x * interval) - 17, (size / 2) - (y * interval) - 15);  
+  c.drawImage(lghelp, (size / 2) + (x * interval) - 17, (size / 2) - (y * interval) - 15);  
+
+  aidez--;  
+  if (aidez > 0) {
+    c.drawImage(aidez_moi, (size / 2) + (x * interval), (size / 2) - (y * interval) - 60);      
+  } else {
+    if (aidez < -50 )  {
+      aidez = 100;
+    }
+  }
 }
 
 function afficheLGSad(c, x, y) {
   //  console.log('afficheLGH');
   var img = document.getElementById("lgsad");
   c.drawImage(img, (size / 2) + (x * interval) - 17, (size / 2) - (y * interval) - 12);  
+
+  img = document.getElementById("oh_non");
+  c.drawImage(img, (size / 2) + (x * interval) + 10, (size / 2) - (y * interval) - 60);  
+
 }
 
 function afficheLGHappy(c, x, y) {
   //  console.log('afficheLGH');
   var img = document.getElementById("lghappy");
   c.drawImage(img, (size / 2) + (x * interval) - 22, (size / 2) - (y * interval) - 10);  
+
+  img = document.getElementById("merci");
+  c.drawImage(img, (size / 2) + (x * interval) + 10, (size / 2) - (y * interval) - 70);    
 }
 
 
@@ -136,7 +214,7 @@ function afficheIle(c) {
 }
 
 function clear(c) {
-  c.fillStyle = 'rgba(150, 192, 255, 1)';
+  c.fillStyle = 'rgba(150, 192, 255, 1)'; // water blue
   //c.clearRect(0, 0, size, size);
   c.fillRect(0, 0, size, size);  
 }
@@ -151,7 +229,8 @@ function info(c) {
   //ctx.fillRect(0, 0, 200, 100);
   c.font = '10px sans-serif';
   c.fillStyle = 'black';
-  c.fillText(xx.toFixed(0) + ", " + yy.toFixed(0), 3, 10);
+  //c.fillText(xx.toFixed(0) + ", " + yy.toFixed(0), 3, 10);
+  c.fillText(game_state, 3, 10);
 }
 
 function square(c) {
@@ -169,6 +248,8 @@ function square(c) {
 }
 
 function init() {
+
+  button.disabled = true;
 
   canvas = document.getElementById('canvas');
   if (canvas.getContext) {
@@ -238,19 +319,39 @@ function dessinePlanCartesien(c) {
 
 function btnOK() {
 
-  const button = document.getElementById('bouton');
-  button.disabled = true;
+  user_x = document.getElementById("X").value;
+  user_y = document.getElementById("Y").value;
+  console.log("piton cliqué!", user_x, user_y);
 
-  var coord_x = document.getElementById("X").value;
-  var coord_y = document.getElementById("Y").value;
-  console.log("piton cliqué!", coord_x, coord_y);
-  
-  guy_happy = false;
-  guy_sad = false;
-  
-  uy = (coord_y * -interval) + (size / 2);
-
-  cx = (coord_x * interval) + (size / 2); // a calculer... todo
+  cx = coordToScreenX(user_x);
   cy = 0;
-  drop_en_cours = true;
+
+  ux = coordToScreenX(user_x);
+  uy = coordToScreenY(user_y);
+
+  game_state = "drop";
+
+}
+
+function btnEncore() {
+
+  document.getElementById("X").value = "";
+  document.getElementById("Y").value = "";  
+
+  game_state = "start";
+
+}
+
+function coordToScreenX(cx) {
+  return (size / 2) + (cx * interval);
+}
+
+function coordToScreenY(cy) {
+  return (size / 2) - (cy * interval);  
+}
+
+function Rnd(min, max) { // get a random integer between min, max inclusive
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
 }

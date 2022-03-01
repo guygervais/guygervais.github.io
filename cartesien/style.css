@@ -9,4 +9,9 @@ canvas {
   display: block;
 }
 
+form { 
+  margin: 0 auto; 
+  width:250px;
+}
+
 .hide { display: none; }
