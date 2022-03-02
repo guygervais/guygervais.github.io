@@ -33,6 +33,11 @@ let aidez = 60;
 
 let rotation = 45;
 
+let rot_ile;
+
+let reussi = 0;
+let perdu = 0;
+
 window.onload = main();
 
 function main() {
@@ -156,14 +161,46 @@ function draw() {
 
       if (tx === ux && ty === uy) {
         game_state = "happy";
+        reussi += 1;
+        document.cookie ='reussi=' + reussi;        
+        displayScore();
       } else {
         game_state = "sad";
+        perdu += 1;
+        document.cookie = 'perdu=' + perdu;
+        displayScore();
       }
     }
 
   }
 
 }
+
+function displayScore() {
+
+  switch(reussi) {
+    case 0:
+      break;
+    case 1:
+      document.getElementById('reussi').innerHTML = 'Sauvetage réussi: 1';
+      break;
+    default:
+      document.getElementById('reussi').innerHTML = 'Sauvetages réussis: '+reussi;
+  }
+  
+  switch(perdu) {
+    case 0:
+      break;
+    case 1:
+      document.getElementById('perdu').innerHTML = 'Boite perdue: 1';
+      break;
+    default:
+      document.getElementById('perdu').innerHTML = 'Boites perdues: '+perdu;
+  }
+
+}
+
+
 
 function afficheCadeau(c) {  
   rotation += 3;
@@ -222,9 +259,29 @@ function afficheIle(c) {
   //c.translate(canvas.width,0);
   //c.rotate(90*Math.PI/180);
 
-  c.drawImage(img, 0, 0);  
+  //c.drawImage(img, 0, 0);  
   //context.drawImage(image,-image.width/2,-image.width/2);
-  //c.restore();
+  //c.restore();  
+
+  switch(rot_ile) {
+    case 1:
+      drawImage(c, img, 0, 0, img.width, img.height, 0);
+      break;
+
+    case 2:
+      drawImage(c, img, 0, 0, img.width, img.height, 90);
+      break;
+
+    case 3:
+      drawImage(c, img, 0, 0, img.width, img.height, 180);
+      break;
+
+    case 4:
+      drawImage(c, img, 0, 0, img.width, img.height, 270);
+      break;
+  }
+
+
 
 }
 
@@ -290,6 +347,15 @@ function init() {
 
   dessinePlanCartesien(buf);
 
+  rot_ile = Rnd(1, 4);
+
+  reussi = parseInt(getCookieValue('reussi', 0));
+  perdu = parseInt(getCookieValue('perdu', 0));
+
+  console.log("reussi, perdu", reussi, perdu);
+
+  displayScore();
+
 }
 
 //done: optimize by drawing once to a 2nd canvas and copy buffer.
@@ -337,6 +403,11 @@ function btnOK() {
   user_x = document.getElementById("X").value;
   user_y = document.getElementById("Y").value;
   //console.log("piton cliqué!", user_x, user_y);
+  
+  if (isNaN(user_x) || isNaN(user_y)) {
+    window.alert("Les valeurs doivent être numériques.")
+    return false;
+  }
 
   cx = coordToScreenX(user_x);
   cy = 0;
@@ -370,3 +441,9 @@ function Rnd(min, max) { // get a random integer between min, max inclusive
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
 }
+
+function getCookieValue(name, defaut) {
+  var tmp = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || '';
+  if (tmp == '') { tmp = defaut; }
+  return tmp;
+  }
