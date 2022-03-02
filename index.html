@@ -8,8 +8,37 @@
   </head>
 
   <body>
-    <!-- 720, 840, 960 work well-->
-    <canvas id="canvas" width="960" height="960"></canvas>
+
+    <div style="width: 100%; overflow: hidden;">
+      <div style="width: 300; float: left; margin-left: 20px;">
+        <form>
+          <p>Monsieur Malpris s'est retrouvé perdu sur une île déserte. Il aurait besoin d'une boîte de secours... pouvez-vous l'aider?</p>
+          <h3>Entrez les coordonnées (X, Y)</h3>
+          <label for="fname">( </label>
+          <input type="text" id="X" size="3"> 
+          <label for="fname">, </label>      
+          <input type="text" id="Y" size="3">
+          <label for="lname">)</label>
+          <input id="bouton" type="button" value="OK" onclick="return btnOK();">
+          <br>
+          <br>
+          <input id="encore" type="button" value="Rejouer" class="hide" onclick="return btnEncore();">
+        </form>
+      </div>
+      <div style="margin-left: 300px;">
+          <canvas id="canvas" width="720" height="720"></canvas>
+      </div>
+    </div>
+
+    <img id="ile" src="island.png" class="hide">
+    <img id="lghelp" src="little-guy-help.png" class="hide">
+    <img id="lgsad" src="little-guy-sad.png" class="hide">
+    <img id="lghappy" src="little-guy-happy.png" class="hide">
+    <img id="care" src="care.png" class="hide">
+    <img id="oh_non" src="oh_non.png" class="hide">
+    <img id="merci" src="merci.png" class="hide">
+    <img id="aidez_moi" src="aidez_moi.png" class="hide">
+
   </body>
 
 </html>
