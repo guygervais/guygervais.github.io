@@ -25,10 +25,13 @@ const button = document.getElementById('bouton');
 const encore = document.getElementById('encore');
 const lghelp = document.getElementById("lghelp");
 const aidez_moi = document.getElementById("aidez_moi");
+const paquet = document.getElementById('care');
 
 let game_state = "start";
 
 let aidez = 60;
+
+let rotation = 45;
 
 window.onload = main();
 
@@ -37,6 +40,8 @@ function main() {
   window.requestAnimationFrame(gameLoop);
 }
 
+var tmp = 0;
+
 function gameLoop() {
   draw();  
 
@@ -44,10 +49,13 @@ function gameLoop() {
 
     case "start":
       // code block
-      encore.classList.add("hide");
-      placeGuy();
-      game_state = "help";
-      document.getElementById("X").focus();
+      tmp++;
+      if (tmp > 10) { // corrige un bug quand la page n'as pas fini d'afficher...
+        encore.classList.add("hide");
+        placeGuy();
+        game_state = "help";
+        document.getElementById("X").focus();
+      }
       break;
 
     case "help":
@@ -85,26 +93,27 @@ function placeGuy() {
 
     count++;
 
-    target_x = Rnd(-limit, limit)
-    target_y = Rnd(-limit, limit)
+    target_x = Rnd(-limit, limit);
+    target_y = Rnd(-limit, limit);
 
     tx = (target_x * interval) + (size / 2);
     ty = (target_y * -interval) + (size / 2);
 
+
     //console.log("target-c",target_x,target_y);
     //console.log("target-s",tx,ty);
 
-    pixel = ctx.getImageData(tx + 2, ty + 2, 1, 1).data;
-    //console.log(pixel);
+    pixel = ctx.getImageData(tx+3, ty+3, 1, 1).data;
+    //console.log(target_x, target_y, tx, ty, pixel);
 
   }
-  while ( (pixel[0] != 255) && (count < 1000) ); // water
+  while ( (pixel[0] != 255) && (count < 9999) ); // water  
 
-  console.log("pixel, count",pixel, count)
+  if (count > 1000) { console.log("count =", count); }
 
   //while (false);
-  console.log("target-c",target_x,target_y);
-  console.log("target-s",tx,ty);
+  //console.log("target-c",target_x,target_y);
+  //console.log("target-s",tx,ty);
 
 }
 
@@ -143,7 +152,7 @@ function draw() {
       const button = document.getElementById('bouton');
       button.disabled = false;    
 
-      console.log("cad.x,y =", cx, cy, "t.x,y=", tx, ty, "user.x,y=",ux, uy);
+      //console.log("cad.x,y =", cx, cy, "t.x,y=", tx, ty, "user.x,y=",ux, uy);
 
       if (tx === ux && ty === uy) {
         game_state = "happy";
@@ -156,13 +165,19 @@ function draw() {
 
 }
 
-function afficheCadeau(c) {
-  //c.fillStyle = 'rgba(128, 00, 0, 1.0)';
-  //c.fillRect(cx-8, cy, 16, 16);
-  var jitter = Rnd(-1,1)
+function afficheCadeau(c) {  
+  rotation += 3;
+  if (rotation >= 360) { rotation -= 360; }  
+  drawImage(c, paquet, cx - 12, cy - 14, paquet.width, paquet.height, rotation);  
+}
 
-  var img = document.getElementById("care");
-  c.drawImage(img, cx-13+jitter, cy-15);  
+function drawImage(ctx, image, x, y, w, h, degrees) {  // perme d'afficher images avec rotation...
+  ctx.save();
+  ctx.translate(x+w/2, y+h/2);
+  ctx.rotate(degrees*Math.PI/180.0);
+  ctx.translate(-x-w/2, -y-h/2);
+  ctx.drawImage(image, x, y, w, h);
+  ctx.restore();
 }
 
 function afficheLGHelp(c, x, y) {
@@ -259,7 +274,7 @@ function init() {
   buffer = document.createElement('canvas');
   buffer.width = canvas.width;
   buffer.height = canvas.height;
-  console.log("buffer size", buffer.width, buffer.height)
+  //console.log("buffer size", buffer.width, buffer.height)
   if (buffer.getContext) {
     buf = buffer.getContext('2d');
   }
@@ -280,7 +295,7 @@ function init() {
 //done: optimize by drawing once to a 2nd canvas and copy buffer.
 function dessinePlanCartesien(c) {
 
-  console.log("drawing grid", size, unite, interval); 
+  //console.log("drawing grid", size, unite, interval); 
   c.fillStyle = 'rgba(0, 0, 200, 0.3)';
 
   for(let x = 0; x < size; x += interval) {
@@ -321,7 +336,7 @@ function btnOK() {
 
   user_x = document.getElementById("X").value;
   user_y = document.getElementById("Y").value;
-  console.log("piton cliqué!", user_x, user_y);
+  //console.log("piton cliqué!", user_x, user_y);
 
   cx = coordToScreenX(user_x);
   cy = 0;
