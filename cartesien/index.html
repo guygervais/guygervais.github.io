@@ -12,8 +12,8 @@
     <div style="width: 100%; overflow: hidden;">
       <div style="width: 300; float: left; margin-left: 20px;">
         <form>
-          <p>Monsieur Malpris s'est retrouvé perdu sur une île déserte. Il aurait besoin d'une boîte de secours... pouvez-vous l'aider?</p>
-          <h3>Entrez les coordonnées (X, Y)</h3>
+          <p>Monsieur Malpris s'est retrouvé perdu sur une ile déserte. Il aurait besoin d'une boite de secours... pouvez-vous l'aider?</p>
+          <h3>Entrez les coordonnées</h3>
           <label for="fname">( </label>
           <input type="text" id="X" size="3"> 
           <label for="fname">, </label>      
@@ -24,6 +24,8 @@
           <br>
           <input id="encore" type="button" value="Rejouer" class="hide" onclick="return btnEncore();">
         </form>
+        <h3 style="color: blue" id="reussi">&nbsp;</h3>
+        <h3 style="color: red" id="perdu">&nbsp;</h3>
       </div>
       <div style="margin-left: 300px;">
           <canvas id="canvas" width="720" height="720"></canvas>
