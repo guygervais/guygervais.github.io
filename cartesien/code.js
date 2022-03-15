@@ -108,7 +108,7 @@ function placeGuy() {
     //console.log("target-c",target_x,target_y);
     //console.log("target-s",tx,ty);
 
-    pixel = ctx.getImageData(tx+3, ty+3, 1, 1).data;
+    pixel = ctx.getImageData(tx-3, ty-3, 1, 1).data;
     //console.log(target_x, target_y, tx, ty, pixel);
 
   }
