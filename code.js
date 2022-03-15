@@ -112,7 +112,7 @@ function placeGuy() {
     console.log(target_x, target_y, tx, ty, pixel);
 
   }
-  while ( (pixel[0] != 255) && (count < 9999) ); // water  
+  while ( (pixel[0] < 254) && (count < 9999) ); // water  
 
   if (count > 1000) { console.log("count =", count); }
 
